@@ -2,35 +2,53 @@
 
 #include <stdio.h>
 
-char	*read_line(int fd);
+ssize_t	fill_buffer(char **buffer, int fd);
+char	*get_content(char *buffer);
 
 char	*get_next_line(int fd)
 {
+	char	*buffer;
 	char	*line;
 
-	line = read_line(fd);
+	bytes_read = fill_buffer(&buffer, fd);
+	line = get_content(buffer);
+	while (!ft_strrchr(line, '\n'))
+	{
+	}
+	free(buffer);
 	return (line);
 }
 
-char	*read_line(int fd)
+char	*get_content(char *buffer)
 {
-	char	*buffer;
-	size_t	line_size;
+	size_t	idx;
+	char	*content;
 
-	buffer = malloc(BUFFER_SIZE * sizeof(char));
-	if (!buffer || read(fd, buffer, 1) <= 0)
+	idx = -1;
+	while (buffer[++idx])
+		;
+	content = malloc((idx + 1) * sizeof(char));
+	if (!content)
 		return (NULL);
-	line_size = 0;
-	if (BUFFER_SIZE > 1)
+	idx = -1;
+	while (buffer[++idx])
+		content[idx] = buffer[idx];
+	return (content);
+}
+
+ssize_t	fill_buffer(char **buffer, int fd)
+{
+	ssize_t	bytes_read;
+
+	*buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!*buffer)
+		return (NULL);
+	bytes_read = read(fd, *buffer, BUFFER_SIZE);
+	if (bytes_read <= 0 || bytes_read > BUFFER_SIZE)
 	{
-		while (line_size < BUFFER_SIZE - 1
-			&& read(fd, buffer + line_size, 1) > 0
-			&& *(buffer + line_size) != '\n')
-			line_size++;
-		if (line_size < BUFFER_SIZE
-			&& *(buffer + line_size) == '\n')
-			*(buffer + line_size++) = '\n';
+		free(*buffer);
+		return (NULL);
 	}
-	*(buffer + line_size) = '\0';
-	return (buffer);
+	(*buffer)[bytes_read] = '\0';
+	return (bytes_read);
 }
