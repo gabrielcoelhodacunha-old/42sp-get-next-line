@@ -8,62 +8,64 @@ static void	*free_memory(void *one, void *two, void *three, void *four);
 char	*get_next_line(int fd)
 {
 	static char	*buffer;
-	char	*aux;
+	static char	*aux;
 	static char	*line;
-	char	*line_ptr;
+	static char	*line_ptr;
 	static ssize_t	bytes_read;
 	static char	*new_line;
-	size_t	line_len;
+	static size_t	line_len;
 	static size_t	start;
 
 	if (!buffer)
 		buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
 		return (free_memory(line, NULL, NULL, NULL));
-	if (line)
+	if (line && new_line)
+	{
 		free(line);
-	line = ft_strdup("");
+		line = NULL;
+		new_line = NULL;
+	}
+	if (!line )
+		line = ft_strdup("");
 	if (!line)
 		return (free_memory(buffer, NULL, NULL, NULL));
 	if (!bytes_read
-		|| (new_line))
-	{
+		|| (bytes_read == BUFFER_SIZE
+		&& line_len == bytes_read))
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		start = 0;
-	}
-	if (!bytes_read)
+	if (bytes_read <= 0 || bytes_read > BUFFER_SIZE)
 		return (free_memory(buffer, line, NULL, NULL));
 	while (bytes_read)
 	{
-		if (bytes_read < 0 || bytes_read > BUFFER_SIZE)
-			return (free_memory(buffer, aux, line, NULL));
 		buffer[bytes_read] = '\0';
 		
 		new_line = ft_strchr(buffer + start, '\n');
-		if (!new_line)
-			line_len = bytes_read;
-		else
+		line_len = bytes_read;
+		if (new_line)
 			line_len = new_line + 1 - buffer + start;
 		aux = malloc(line_len + 1);
 		if (!aux)
 			return (free_memory(buffer, line, NULL, NULL));
 		ft_memcpy(aux, buffer + start, line_len);
 		aux[line_len] = '\0';
-		if (!line_len)
-			return (free_memory(buffer, line, aux, NULL));
+		
 		line_ptr = line;
 		line = ft_strjoin(line, aux);
 		free(line_ptr);
 
+		if (new_line && line_len < bytes_read)
+			start += line_len - 1;
+		else
+			start = 0;
 		if (new_line)
 		{
-			start += line_len;
 			free(aux);
-			break ;
+			return (line);
 		}
-
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		start = 0;
+		if (bytes_read < 0 || bytes_read > BUFFER_SIZE)
+			return (free_memory(buffer, line, aux, NULL));
 		free(aux);
 	}
 	return (line);
