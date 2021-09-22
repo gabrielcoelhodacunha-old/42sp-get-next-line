@@ -10,6 +10,7 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char	*aux;
 	static char	*line;
+	char	*line_ptr;
 	static ssize_t	bytes_read;
 	static char	*new_line;
 	size_t	line_len;
@@ -25,8 +26,7 @@ char	*get_next_line(int fd)
 	if (!line)
 		return (free_memory(buffer, NULL, NULL, NULL));
 	if (!bytes_read
-		|| (new_line
-		&& bytes_read == BUFFER_SIZE))
+		|| (new_line))
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		start = 0;
@@ -41,18 +41,20 @@ char	*get_next_line(int fd)
 		
 		new_line = ft_strchr(buffer + start, '\n');
 		if (!new_line)
-			line_len = bytes_read + 1;
+			line_len = bytes_read;
 		else
-			line_len = new_line - (char *)(buffer + start) + 1;
+			line_len = new_line + 1 - buffer + start;
 		aux = malloc(line_len + 1);
 		if (!aux)
 			return (free_memory(buffer, line, NULL, NULL));
 		ft_memcpy(aux, buffer + start, line_len);
 		aux[line_len] = '\0';
-		if (!ft_strlen(aux))
+		if (!line_len)
 			return (free_memory(buffer, line, aux, NULL));
+		line_ptr = line;
 		line = ft_strjoin(line, aux);
-	
+		free(line_ptr);
+
 		if (new_line)
 		{
 			start += line_len;
