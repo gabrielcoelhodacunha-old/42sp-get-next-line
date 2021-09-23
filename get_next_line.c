@@ -1,78 +1,92 @@
 #include "get_next_line.h"
-#include "../00-libft/libft.h"
 
-#include <stdio.h>
+typedef struct s_execution
+{
+	char	*buffer;
+	char	*line;
+	ssize_t	bytes_read;
+	ssize_t	start;
+}	t_execution;
 
-static void	*free_memory(void *one, void *two, void *three, void *four);
+static void	*free_memory(char **one, char **two);
+static void	*check_for_previous_execution(t_execution *ex, int fd);
+
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
+	static t_execution	ex;
 	char	*aux;
-	static char	*line;
 	char	*line_ptr;
-	static ssize_t	bytes_read;
 	char	*new_line;
 	size_t	bytes_to_copy;
-	static size_t	start;
 
-	if (!buffer)
-		buffer = malloc(BUFFER_SIZE + 1);
-	if (!buffer)
-		return (free_memory(line, NULL, NULL, NULL));
-	if (line)
-		free_memory(line, NULL, NULL, NULL);
-	line = ft_strdup("");
-	if (!line)
-		return (free_memory(buffer, NULL, NULL, NULL));
-	if (!bytes_read || start == bytes_read)
+	if (!check_for_previous_execution(&ex, fd))
+		return (NULL);
+	while (ex.bytes_read)
 	{
-		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		start = 0;
-	}
-	if (bytes_read <= 0 || bytes_read > BUFFER_SIZE)
-		return (free_memory(buffer, line, NULL, NULL));
-	while (bytes_read)
-	{
-		buffer[bytes_read] = '\0';
+		ex.buffer[ex.bytes_read] = '\0';
 		
-		new_line = ft_strchr(buffer + start, '\n');
-		bytes_to_copy = bytes_read - start;
+		new_line = ft_strchr(ex.buffer + ex.start, '\n');
+		bytes_to_copy = ex.bytes_read - ex.start;
 		if (new_line)
-			bytes_to_copy = new_line - (buffer + start) + 1;
+			bytes_to_copy = new_line - (ex.buffer + ex.start) + 1;
 		aux = malloc(bytes_to_copy + 1);
 		if (!aux)
-			return (free_memory(buffer, line, NULL, NULL));
-		ft_memcpy(aux, buffer + start, bytes_to_copy);
+			return (free_memory(&ex.buffer, &ex.line));
+		ft_memcpy(aux, ex.buffer + ex.start, bytes_to_copy);
 		aux[bytes_to_copy] = '\0';
 		
-		line_ptr = line;
-		line = ft_strjoin(line, aux);
-		free_memory(aux, line_ptr, NULL, NULL);
+		line_ptr = ex.line;
+		ex.line = ft_strjoin(line_ptr, aux);
+		free_memory(&aux, &line_ptr);
 
-		start += bytes_to_copy;
+		ex.start += bytes_to_copy;
 		if (new_line)
-			return (line);
-		if (start == bytes_read)
+			return (ex.line);
+		if (ex.start == ex.bytes_read)
 		{
-			bytes_read = read(fd, buffer, BUFFER_SIZE);
-			start = 0;
+			ex.bytes_read = read(fd, ex.buffer, BUFFER_SIZE);
+			ex.start = 0;
 		}
-		if (bytes_read < 0 || bytes_read > BUFFER_SIZE)
-			return (free_memory(buffer, line, NULL, NULL));
+		if (ex.bytes_read < 0 || ex.bytes_read > BUFFER_SIZE)
+			return (free_memory(&ex.buffer, &ex.line));
 	}
-	return (line);
+	return (ex.line);
 }
 
-static void	*free_memory(void *one, void *two, void *three, void *four)
+static void	*check_for_previous_execution(t_execution *ex, int fd)
 {
-	free(one);
-	free(two);
-	free(three);
-	free(four);
-	one = NULL;
-	two = NULL;
-	three = NULL;
-	four = NULL;
+	if (!ex->buffer)
+		ex->buffer = malloc(BUFFER_SIZE + 1);
+	if (!ex->buffer)
+		return (free_memory(&ex->line, NULL));
+	if (ex->line)
+		free_memory(&ex->line, NULL);
+	ex->line = malloc(1);
+	if (!ex->line)
+		return (free_memory(&ex->buffer, NULL));
+	ex->line[0] = '\0';
+	if (!ex->bytes_read || ex->start == ex->bytes_read)
+	{
+		ex->bytes_read = read(fd, ex->buffer, BUFFER_SIZE);
+		ex->start = 0;
+	}
+	if (ex->bytes_read <= 0 || ex->bytes_read > BUFFER_SIZE)
+		return (free_memory(&ex->buffer, &ex->line));
+	return ((void *) 1);
+}
+
+static void	*free_memory(char **one, char **two)
+{
+	if (one)
+	{
+		free(*one);
+		*one = NULL;
+	}
+	if (two)
+	{
+		free(*two);
+		*two = NULL;
+	}
 	return (NULL);
 }
