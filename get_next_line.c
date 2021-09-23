@@ -8,33 +8,24 @@ static void	*free_memory(void *one, void *two, void *three, void *four);
 char	*get_next_line(int fd)
 {
 	static char	*buffer;
-	static char	*aux;
+	char	*aux;
 	static char	*line;
-	static char	*line_ptr;
+	char	*line_ptr;
 	static ssize_t	bytes_read;
-	static char	*new_line;
-	static size_t	line_len;
+	char	*new_line;
+	size_t	bytes_to_copy;
 	static size_t	start;
 
 	if (!buffer)
 		buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
 		return (free_memory(line, NULL, NULL, NULL));
-	if (line && new_line)
-	{
-		free(line);
-		line = NULL;
-		new_line = NULL;
-	}
-	if (!line )
-		line = ft_strdup("");
+	if (line)
+		free_memory(line, NULL, NULL, NULL);
+	line = ft_strdup("");
 	if (!line)
 		return (free_memory(buffer, NULL, NULL, NULL));
-	if (!bytes_read
-		//|| (bytes_read == BUFFER_SIZE
-		//&& line_len == bytes_read)
-		|| bytes_read - line_len - start > 0
-		)
+	if (!bytes_read || start == bytes_read)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		start = 0;
@@ -46,39 +37,29 @@ char	*get_next_line(int fd)
 		buffer[bytes_read] = '\0';
 		
 		new_line = ft_strchr(buffer + start, '\n');
-		line_len = bytes_read - start;
+		bytes_to_copy = bytes_read - start;
 		if (new_line)
-			line_len = new_line - (buffer + start) + 1;
-		aux = malloc(line_len + 1);
+			bytes_to_copy = new_line - (buffer + start) + 1;
+		aux = malloc(bytes_to_copy + 1);
 		if (!aux)
 			return (free_memory(buffer, line, NULL, NULL));
-		ft_memcpy(aux, buffer + start, line_len);
-		aux[line_len] = '\0';
+		ft_memcpy(aux, buffer + start, bytes_to_copy);
+		aux[bytes_to_copy] = '\0';
 		
 		line_ptr = line;
 		line = ft_strjoin(line, aux);
 		free_memory(aux, line_ptr, NULL, NULL);
 
-		/*
-		if (new_line && line_len < bytes_read)
-			start += line_len - 1;
-		else
-			start = 0;
-		*/
-		if (start + line_len < bytes_read)
-			start += line_len;
+		start += bytes_to_copy;
 		if (new_line)
-		{
-			line_len--;
 			return (line);
-		}
-		if (start + line_len == bytes_read)
+		if (start == bytes_read)
 		{
 			bytes_read = read(fd, buffer, BUFFER_SIZE);
 			start = 0;
 		}
 		if (bytes_read < 0 || bytes_read > BUFFER_SIZE)
-			return (free_memory(buffer, line, aux, NULL));
+			return (free_memory(buffer, line, NULL, NULL));
 	}
 	return (line);
 }
