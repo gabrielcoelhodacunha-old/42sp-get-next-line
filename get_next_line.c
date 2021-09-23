@@ -31,9 +31,14 @@ char	*get_next_line(int fd)
 	if (!line)
 		return (free_memory(buffer, NULL, NULL, NULL));
 	if (!bytes_read
-		|| (bytes_read == BUFFER_SIZE
-		&& line_len == bytes_read))
+		//|| (bytes_read == BUFFER_SIZE
+		//&& line_len == bytes_read)
+		|| bytes_read - line_len - start > 0
+		)
+	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		start = 0;
+	}
 	if (bytes_read <= 0 || bytes_read > BUFFER_SIZE)
 		return (free_memory(buffer, line, NULL, NULL));
 	while (bytes_read)
@@ -41,9 +46,9 @@ char	*get_next_line(int fd)
 		buffer[bytes_read] = '\0';
 		
 		new_line = ft_strchr(buffer + start, '\n');
-		line_len = bytes_read;
+		line_len = bytes_read - start;
 		if (new_line)
-			line_len = new_line + 1 - buffer + start;
+			line_len = new_line - (buffer + start) + 1;
 		aux = malloc(line_len + 1);
 		if (!aux)
 			return (free_memory(buffer, line, NULL, NULL));
@@ -52,21 +57,28 @@ char	*get_next_line(int fd)
 		
 		line_ptr = line;
 		line = ft_strjoin(line, aux);
-		free(line_ptr);
+		free_memory(aux, line_ptr, NULL, NULL);
 
+		/*
 		if (new_line && line_len < bytes_read)
 			start += line_len - 1;
 		else
 			start = 0;
+		*/
+		if (start + line_len < bytes_read)
+			start += line_len;
 		if (new_line)
 		{
-			free(aux);
+			line_len--;
 			return (line);
 		}
-		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (start + line_len == bytes_read)
+		{
+			bytes_read = read(fd, buffer, BUFFER_SIZE);
+			start = 0;
+		}
 		if (bytes_read < 0 || bytes_read > BUFFER_SIZE)
 			return (free_memory(buffer, line, aux, NULL));
-		free(aux);
 	}
 	return (line);
 }
