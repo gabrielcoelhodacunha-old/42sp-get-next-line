@@ -72,7 +72,10 @@ static void	*check_for_previous_execution(t_execution *ex, int fd)
 		ex->start = 0;
 	}
 	if (ex->bytes_read <= 0 || ex->bytes_read > BUFFER_SIZE)
+	{
+		ex->bytes_read = 0;
 		return (free_memory(&ex->buffer, &ex->line));
+	}
 	return ((void *) 1);
 }
 
