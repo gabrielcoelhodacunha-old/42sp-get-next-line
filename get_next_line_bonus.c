@@ -1,12 +1,12 @@
 #include "get_next_line_bonus.h"
 
 static void	*free_memory(char **one);
-static char	*check_execution_and_create_empty_line(char **buffer, int fd);
-static char	*copy_from_buffer_to_line(char **buffer, char **line);
+static char	*check_execution_and_create_empty_line(char ***buffer, int fd);
+static char	*copy_from_buffer_to_line(char ***buffer, char **line);
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer;
+	static char	**buffer;
 	char	*line;
 	ssize_t	bytes_read;
 	size_t	buffer_start_idx;
@@ -30,7 +30,7 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-static char	*copy_from_buffer_to_line(char **buffer, char **line, ssize_t bytes_read, size_t *buffer_start_idx)
+static char	*copy_from_buffer_to_line(char ***buffer, char **line, ssize_t bytes_read, size_t *buffer_start_idx)
 {
 	char	*aux;
 	char	*previous_line;
@@ -58,14 +58,30 @@ static char	*copy_from_buffer_to_line(char **buffer, char **line, ssize_t bytes_
 	return (new_line);
 }
 
-static char	*check_execution_and_create_empty_line(char **buffer, int fd, ssize_t *bytes_read, size_t *buffer_start_idx)
+static char	*check_execution_and_create_empty_line(char ***buffer, int fd, ssize_t *bytes_read, size_t *buffer_start_idx)
 {
 	char	*line;
+	int	fd_idx;
+	char	**aux;
 
 	if (!*buffer)
 	{
-		*buffer = malloc(BUFFER_SIZE + 1);
-		(*buffer)[0] = '\0';
+		*buffer = malloc(fd + 2);
+		fd_idx = -1;
+		while (++fd_idx <= fd)
+		{
+			(*buffer)[fd_idx] = malloc(BUFFER_SIZE + 1);
+			(*buffer)[fd_idx][0] = '\0';
+		}
+		(*buffer)[fd_idx] = NULL;
+	}
+	fd_idx = -1;
+	while ((*buffer)[++fd_idx])
+		;
+	if (--fd_idx < fd)
+	{
+		**aux = *buffer;
+		
 	}
 	if (!*buffer)
 		return (NULL);
