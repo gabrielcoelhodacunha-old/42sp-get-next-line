@@ -9,15 +9,14 @@ void	*ft_memcpy(void *dst, const void *src, size_t len);
 size_t	ft_strlen(const char *s);
 char	*ft_strjoin(char const *s1, char const *s2);
 
-/* Mandatory */
+/* Data to keep between calls */
 typedef struct s_execution
 {
-	char	*buffer;
+	char	buffer[BUFFER_SIZE + 1];
 	ssize_t	bytes_read;
 	ssize_t	start;
 }	t_execution;
-char	*get_next_line(int fd);
 
-/* Bonus */
+char	*get_next_line(int fd);
 
 #endif
