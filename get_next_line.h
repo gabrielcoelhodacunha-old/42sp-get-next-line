@@ -7,7 +7,6 @@
 char	*ft_strchr(const char *s, int c);
 void	*ft_memcpy(void *dst, const void *src, size_t len);
 size_t	ft_strlen(const char *s);
-char	*ft_strjoin(char const *s1, char const *s2);
 
 /* Data to keep between calls */
 typedef struct s_execution

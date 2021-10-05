@@ -10,7 +10,7 @@ char	*get_next_line(int fd)
 	char				*line;
 
 	line = check_execution_and_create_empty_line(&ex, fd);
-	while (ex.bytes_read)
+	while (line && ex.bytes_read)
 	{
 		if (copy_from_buffer_to_line_and_find_end_of_line(&ex, &line))
 			return (line);
@@ -51,7 +51,7 @@ static char	*copy_from_buffer_to_line_and_find_end_of_line(
 	}
 	ft_memcpy(*line, previous_line, previous_line_len);
 	ft_memcpy(*line + previous_line_len, ex->buffer + ex->start, bytes_to_copy);
-	(*line)[bytes_to_copy] = '\0';
+	(*line)[previous_line_len + bytes_to_copy] = '\0';
 	free(previous_line);
 	ex->start += bytes_to_copy;
 	return (eol);
