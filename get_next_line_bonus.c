@@ -16,7 +16,13 @@ char	*allocate_buffer(char **buffer, int fd)
 	if (fd > OPEN_MAX)
 		return (NULL);
 	if (!buffer[fd])
-		buffer[fd] = malloc(BUFFER_SIZE + 1);
+	{
+		buffer[fd] = malloc(BUFFER_SIZE + 2);
+		if (!buffer[fd])
+			return (NULL);
+		buffer[fd][0] = '\0';
+		buffer[fd]++;
+	}
 	return (buffer[fd]);
 }
 
@@ -35,7 +41,7 @@ char	*get_next_line(int fd)
 	{
 		if (copy_from_buffer_to_line_and_find_end_of_line(buffer[fd],
 					&(bytes_read[fd]), &(start[fd]), &line))
-			return (line);
+			break ;
 		if (start[fd] == bytes_read[fd])
 		{
 			bytes_read[fd] = read(fd, buffer[fd], BUFFER_SIZE);
@@ -46,6 +52,11 @@ char	*get_next_line(int fd)
 			free(line);
 			return (NULL);
 		}
+	}
+	if (start[fd] == bytes_read[fd])
+	{
+		free(--(buffer[fd]));
+		buffer[fd] = NULL;
 	}
 	return (line);
 }
@@ -92,8 +103,6 @@ static char	*check_execution_and_create_empty_line(char **buffer,
 	if (*bytes_read <= 0 || *bytes_read > BUFFER_SIZE)
 	{
 		*bytes_read = 0;
-		free(*buffer);
-		*buffer = NULL;
 		return (NULL);
 	}
 	line = malloc(1);
