@@ -32,3 +32,13 @@ size_t	ft_strlen(const char *s)
 		len++;
 	return (len);
 }
+
+void	*ft_memset(void *dest, int c, size_t len)
+{
+	unsigned char	*ptr;
+
+	ptr = dest;
+	while (len--)
+		*(ptr++) = (unsigned char) c;
+	return (dest);
+}
