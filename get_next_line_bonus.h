@@ -2,6 +2,9 @@
 # define GET_NEXT_LINE_BONUS_H
 # include <stdlib.h>
 # include <unistd.h>
+# ifndef MAX_FD
+#  define MAX_FD 256
+# endif
 
 /* Utils from Libft */
 char	*ft_strchr(const char *s, int c);
