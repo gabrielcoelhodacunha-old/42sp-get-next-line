@@ -14,16 +14,7 @@ char	*get_next_line(int fd)
 	{
 		if (copy_from_buffer_to_line_and_find_end_of_line(&ex, &line))
 			return (line);
-		if (ex.start == ex.bytes_read)
-		{
-			ex.bytes_read = read(fd, ex.buffer, BUFFER_SIZE);
-			ex.start = 0;
-		}
-		if (ex.bytes_read < 0 || ex.bytes_read > BUFFER_SIZE)
-		{
-			free(line);
-			return (NULL);
-		}
+		free(check_execution_and_create_empty_line(&ex, fd));
 	}
 	return (line);
 }
