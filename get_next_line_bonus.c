@@ -2,16 +2,17 @@
 
 static char	*allocate_buffer(char **buffer, int fd);
 static char	*check_execution_and_create_empty_line(char **buffer,
-			ssize_t *bytes_read, ssize_t *start, int fd);
+				ssize_t *bytes_read, ssize_t *start, int fd);
 static char	*copy_from_buffer_to_line_and_find_end_of_line(char **buffer,
-			ssize_t *bytes_read, ssize_t *start, char **line);
+				ssize_t *bytes_read, ssize_t *start,
+				char **line);
 
 char	*get_next_line(int fd)
 {
 	static char	*buffer[MAX_FD];
-	ssize_t	bytes_read;
-	ssize_t	start;
-	char				*line;
+	ssize_t		bytes_read;
+	ssize_t		start;
+	char		*line;
 
 	if (!allocate_buffer(buffer, fd))
 		return (NULL);
@@ -20,22 +21,10 @@ char	*get_next_line(int fd)
 	while (line && bytes_read)
 	{
 		if (copy_from_buffer_to_line_and_find_end_of_line(&(buffer[fd]),
-					&bytes_read, &start, &line))
+				&bytes_read, &start, &line))
 			break ;
-		if (start == bytes_read)
-		{
-			buffer[fd] -= start;
-			bytes_read = read(fd, buffer[fd], BUFFER_SIZE);
-			buffer[fd][bytes_read] = '\0';
-			start = 0;
-		}
-		if (bytes_read < 0 || bytes_read > BUFFER_SIZE)
-		{
-			free(line);
-			free(--(buffer[fd]));
-			buffer[fd] = NULL;
-			return (NULL);
-		}
+		free(check_execution_and_create_empty_line(&(buffer[fd]),
+				&bytes_read, &start, fd));
 	}
 	if (start == bytes_read)
 	{
@@ -70,7 +59,6 @@ static char	*copy_from_buffer_to_line_and_find_end_of_line(char **buffer,
 	ft_memcpy(*line + previous_line_len, *buffer, bytes_to_copy);
 	(*line)[previous_line_len + bytes_to_copy] = '\0';
 	free(previous_line);
-	*start += bytes_to_copy;
 	*buffer += bytes_to_copy;
 	return (eol);
 }
