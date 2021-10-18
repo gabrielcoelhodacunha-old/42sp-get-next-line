@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*  get_next_line.c                                      :+:      :+:    :+:  */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gcoelho- <gcoelho-@student.42sp.org>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 11:03:12 by gcoelho-          #+#    #+#             */
-/*   Updated: 2021/10/11 11:03:12 by gcoelho-         ###   ########.fr       */
+/*  Updated: 2021/10/18 14:08:54 by gcoelho-           ###   ########.fr      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ static char	*copy_from_buffer_to_line_and_find_end_of_line(
 	char	*eol;
 	char	*previous_line;
 
-	ex->buffer[ex->bytes_read] = '\0';
 	bytes_to_copy = ex->bytes_read - ex->start;
 	eol = ft_strchr(ex->buffer + ex->start, '\n');
 	if (eol)
@@ -67,6 +66,7 @@ static char	*check_execution_and_create_empty_line(t_execution *ex, int fd)
 	if (!ex->bytes_read || ex->start == ex->bytes_read)
 	{
 		ex->bytes_read = read(fd, ex->buffer, BUFFER_SIZE);
+		ex->buffer[ex->bytes_read] = '\0';
 		ex->start = 0;
 	}
 	if (ex->bytes_read <= 0 || ex->bytes_read > BUFFER_SIZE)

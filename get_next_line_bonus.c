@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*  get_next_line_bonus.c                                :+:      :+:    :+:  */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gcoelho- <gcoelho-@student.42sp.org>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 11:03:12 by gcoelho-          #+#    #+#             */
-/*   Updated: 2021/10/11 11:03:12 by gcoelho-         ###   ########.fr       */
+/*  Updated: 2021/10/18 13:58:56 by gcoelho-           ###   ########.fr      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ static char	*allocate_buffer(char **buffer, int fd)
 	buffer[fd] = malloc(BUFFER_SIZE + 2);
 	if (!buffer[fd])
 		return (NULL);
-	ft_memset(buffer[fd], '\0', BUFFER_SIZE + 2);
+	buffer[fd][0] = '\0';
+	buffer[fd][1] = '\0';
 	return (buffer[fd]++);
 }

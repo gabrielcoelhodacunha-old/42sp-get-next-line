@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.h                              :+:      :+:    :+:   */
+/*  get_next_line_bonus.h                                :+:      :+:    :+:  */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gcoelho- <gcoelho-@student.42sp.org>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 11:03:12 by gcoelho-          #+#    #+#             */
-/*   Updated: 2021/10/11 11:03:12 by gcoelho-         ###   ########.fr       */
+/*  Updated: 2021/10/18 14:06:24 by gcoelho-           ###   ########.fr      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@
 char	*ft_strchr(const char *s, int c);
 void	*ft_memcpy(void *dst, const void *src, size_t len);
 size_t	ft_strlen(const char *s);
-void	*ft_memset(void *dest, int c, size_t len);
 
 char	*get_next_line(int fd);
 

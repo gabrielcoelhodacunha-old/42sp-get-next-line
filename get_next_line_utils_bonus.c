@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
+/*  get_next_line_utils_bonus.c                          :+:      :+:    :+:  */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gcoelho- <gcoelho-@student.42sp.org>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 11:03:12 by gcoelho-          #+#    #+#             */
-/*   Updated: 2021/10/11 11:03:12 by gcoelho-         ###   ########.fr       */
+/*  Updated: 2021/10/18 14:01:14 by gcoelho-           ###   ########.fr      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,14 +43,4 @@ size_t	ft_strlen(const char *s)
 	while (s[len])
 		len++;
 	return (len);
-}
-
-void	*ft_memset(void *dest, int c, size_t len)
-{
-	unsigned char	*ptr;
-
-	ptr = dest;
-	while (len--)
-		*(ptr++) = (unsigned char) c;
-	return (dest);
 }
