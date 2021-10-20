@@ -6,11 +6,11 @@
 /*   By: gcoelho- <gcoelho-@student.42sp.org>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/18 14:15:17 by gcoelho-          #+#    #+#             */
-/*   Updated: 2021/10/18 14:15:17 by gcoelho-         ###   ########.fr       */
+/*   Updated: 2021/10/20 13:45:28 by gcoelho-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_strchr(const char *s, int c)
 {
